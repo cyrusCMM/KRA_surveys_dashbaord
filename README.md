@@ -1,16 +1,36 @@
 # KRA Survey Indices Dashboard
 
-Streamlit dashboard for Corporate and Departmental survey indices for the Tax Research & Analysis Department, Research & Surveys Section.
+Final Streamlit package with corrected top banner spacing, KRA logo as PNG, red/black theme, corporate and departmental survey filters, construct performance, trends, segment analysis, and mapped Excel input.
 
-## Run locally
+## Run
 
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
 ```
 
-The app includes a base64-encoded mapped workbook and KRA logo for deployment. Users can also upload an updated mapped Excel workbook from the sidebar.
+## Files
 
-## Streamlit Cloud
+- `app.py` - main Streamlit dashboard
+- `dashboard_utils.py` - charts, formatting, CSS, and data utilities
+- `survey_indices_entry_sheet_mapped.xlsx` - mapped survey entry workbook
+- `assets/kra_logo.png` - PNG logo used in the header
+- `requirements.txt` - Python dependencies
 
-Use `app.py` as the main file.
+## Input workbook sheets
+
+- `Survey_Master`
+- `Construct_Master`
+- `Corporate_Data`
+- `Departmental_Data`
+- `Segment_Data`
+- `Score_Type_Rules`
+
+## v7 fix
+- Fixed Segment Analysis `Segment_Name` KeyError by keeping table data separate from chart data.
+- Added safer unique Plotly keys for segment charts.
+
+
+## v8 update
+- Removed the header "Data as at" date box.
+- Kept the red/black top accent and improved header balance.
