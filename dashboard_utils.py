@@ -84,6 +84,10 @@ def display_series(df: pd.DataFrame, value_col: str = "Score") -> pd.Series:
 
 def load_workbook(uploaded_file=None, default_path: str = "survey_indices_entry_sheet_mapped.xlsx") -> dict:
     source = uploaded_file if uploaded_file is not None else default_path
+    if uploaded_file is None and not Path(default_path).exists():
+        b64_path = Path("data/survey_indices_entry_sheet_mapped.xlsx.b64")
+        if b64_path.exists():
+            source = io.BytesIO(base64.b64decode(b64_path.read_text().strip()))
     sheets = pd.read_excel(source, sheet_name=None)
     out = {k: strip_text(clean_columns(v)) for k, v in sheets.items()}
     for key in ["Corporate_Data", "Departmental_Data", "Segment_Data"]:
@@ -231,12 +235,14 @@ def color_scale_for_scores(scores, better_direction="Higher"):
     return [band_color(v, better_direction) for v in scores]
 
 
-def get_logo_base64(path: str = "assets/kra_logo.png") -> str:
+def get_logo_base64(path: str) -> str:
     p = Path(path)
-    if not p.exists():
-        return ""
-    return base64.b64encode(p.read_bytes()).decode("utf-8")
-
+    if p.exists():
+        return base64.b64encode(p.read_bytes()).decode("utf-8")
+    b64 = Path("assets/kra_logo.png.b64")
+    if b64.exists():
+        return b64.read_text().strip()
+    return ""
 
 def kra_header(logo_path: str = "assets/kra_logo.png") -> str:
     encoded = get_logo_base64(logo_path)
@@ -261,18 +267,18 @@ def inject_css() -> str:
     <style>
     :root{--red:#e30613;--darkred:#9b0008;--black:#050505;--muted:#6b7280;--border:#e5e7eb;--soft:#f8fafc;}
     html, body, [class*="css"]{font-family: Inter, Segoe UI, Arial, sans-serif;}
-    .block-container{padding-top:1.25rem;padding-bottom:.7rem;max-width:1540px;}
+    .block-container{padding-top:2.1rem;padding-bottom:.7rem;max-width:1540px;}
     header[data-testid="stHeader"]{background:transparent;height:0rem;}
     div[data-testid="stToolbar"]{display:none;}
-    .kra-topbar{min-height:112px;display:flex;align-items:center;justify-content:space-between;background:#fff;margin:0 -14px 16px -14px;padding:14px 24px 14px 24px;border-bottom:3px solid var(--red);box-shadow:0 8px 20px rgba(0,0,0,.07);position:relative;overflow:hidden;box-sizing:border-box;}
-    .kra-topbar:after{content:"";position:absolute;right:-18px;top:0;width:300px;height:112px;background:linear-gradient(145deg,transparent 0 42%,var(--red) 43% 68%,#fff 69% 74%,var(--black) 75% 80%,transparent 81%);}
+    .kra-topbar{min-height:128px;display:flex;align-items:center;justify-content:space-between;background:#fff;margin:0 -14px 16px -14px;padding:22px 24px 18px 24px;border-bottom:3px solid var(--red);box-shadow:0 8px 20px rgba(0,0,0,.07);position:relative;overflow:hidden;box-sizing:border-box;}
+    .kra-topbar:after{content:"";position:absolute;right:-18px;top:0;width:300px;height:128px;background:linear-gradient(145deg,transparent 0 42%,var(--red) 43% 68%,#fff 69% 74%,var(--black) 75% 80%,transparent 81%);}
     .kra-brand{width:250px;z-index:2;display:flex;align-items:center;}
-    .kra-logo{max-width:230px;max-height:78px;object-fit:contain;}
+    .kra-logo{max-width:230px;max-height:82px;object-fit:contain;}
     .kra-word-logo{border-left:8px solid var(--red);padding-left:12px;text-transform:uppercase;line-height:1.0;}
     .kra-word-logo b{display:block;font-size:36px;color:var(--black);letter-spacing:1px;}.kra-word-logo span{display:block;font-size:13px;color:var(--red);font-weight:800;}
     .kra-title{z-index:2;text-align:center;flex:1;}
-    .main-title{text-transform:uppercase;font-size:32px;font-weight:950;color:var(--black);letter-spacing:.5px;white-space:nowrap;line-height:1.05;}
-    .title-line{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:10px;}.title-line span{height:3px;width:170px;background:var(--red);display:inline-block;position:relative;}.title-line span:after{content:"";width:9px;height:9px;background:var(--red);border-radius:50%;position:absolute;right:-2px;top:-3px;}.title-line b{text-transform:uppercase;color:var(--red);font-size:22px;font-weight:950;letter-spacing:.5px;line-height:1.05;}
+    .main-title{text-transform:uppercase;font-size:31px;font-weight:950;color:var(--black);letter-spacing:.5px;white-space:nowrap;line-height:1.05;}
+    .title-line{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:10px;}.title-line span{height:3px;width:170px;background:var(--red);display:inline-block;position:relative;}.title-line span:after{content:"";width:9px;height:9px;background:var(--red);border-radius:50%;position:absolute;right:-2px;top:-3px;}.title-line b{text-transform:uppercase;color:var(--red);font-size:21px;font-weight:950;letter-spacing:.5px;line-height:1.05;}
     .date-box{z-index:2;width:220px;text-align:right;padding-right:10px;color:var(--black);font-size:12px;line-height:1.2;margin-top:4px;}.date-box:before{content:"📅";font-size:24px;margin-right:6px;vertical-align:middle;}.date-box span{font-weight:800;display:inline-block;}.date-box b{display:block;font-size:12px;}
     section[data-testid="stSidebar"]{background:linear-gradient(180deg,#030303 0%,#090909 72%,#260004 100%);border-right:2px solid #111;}
     section[data-testid="stSidebar"] *{color:#fff!important;}

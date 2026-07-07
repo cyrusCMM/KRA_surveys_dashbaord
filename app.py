@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import base64
 from pathlib import Path
 
 import pandas as pd
@@ -29,7 +30,7 @@ from dashboard_utils import (
 
 st.set_page_config(
     page_title="KRA Survey Indices Dashboard",
-    page_icon="assets/kra_logo.png",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -287,8 +288,11 @@ elif page_key == "Upload Data":
     st.markdown("<div class='section-card'><div class='section-title'>Mapped Workbook Input Rules</div>", unsafe_allow_html=True)
     st.write("Update the workbook by appending rows to Corporate_Data, Departmental_Data or Segment_Data. Do not change sheet names or column names.")
     st.write("The app automatically separates corporate and departmental surveys, detects latest periods, handles irregular time trends and applies score formatting rules.")
-    with open(DEFAULT_WORKBOOK, "rb") as f:
-        st.download_button("Download mapped entry workbook", data=f, file_name="survey_indices_entry_sheet_mapped.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    if Path(DEFAULT_WORKBOOK).exists():
+        workbook_bytes = Path(DEFAULT_WORKBOOK).read_bytes()
+    else:
+        workbook_bytes = base64.b64decode(Path("data/survey_indices_entry_sheet_mapped.xlsx.b64").read_text().strip())
+    st.download_button("Download mapped entry workbook", data=workbook_bytes, file_name="survey_indices_entry_sheet_mapped.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     st.markdown("</div>", unsafe_allow_html=True)
     st.markdown("<div class='section-card'><div class='section-title'>Score Type Rules</div>", unsafe_allow_html=True)
     if not score_rules.empty:
