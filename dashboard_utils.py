@@ -239,11 +239,13 @@ def get_logo_base64(path: str = "assets/kra_logo.png") -> str:
 
 
 def kra_header(logo_path: str = "assets/kra_logo.png") -> str:
+    # Official KRA logo is loaded from the KRA website so the lion mark and wording remain correct.
+    # The local PNG remains a fallback for offline use.
+    official_logo_url = "https://www.kra.go.ke/templates/kra/images/kra/logoKRA.webp"
     encoded = get_logo_base64(logo_path)
-    if encoded:
-        logo = f'<img src="data:image/png;base64,{encoded}" class="kra-logo" />'
-    else:
-        logo = '<div class="kra-word-logo"><b>KRA</b><span>Kenya Revenue Authority</span></div>'
+    fallback = f"data:image/png;base64,{encoded}" if encoded else ""
+    fallback_attr = f' onerror="this.onerror=null;this.src=\'{fallback}\';"' if fallback else ""
+    logo = f'<img src="{official_logo_url}" class="kra-logo" alt="Kenya Revenue Authority logo"{fallback_attr} />'
     return f"""
     <div class="kra-topbar">
         <div class="kra-brand">{logo}</div>
@@ -261,19 +263,19 @@ def inject_css() -> str:
     <style>
     :root{--red:#e30613;--darkred:#9b0008;--black:#050505;--muted:#6b7280;--border:#e5e7eb;--soft:#f8fafc;}
     html, body, [class*="css"]{font-family: Inter, Segoe UI, Arial, sans-serif;}
-    .block-container{padding-top:1.25rem;padding-bottom:.7rem;max-width:1540px;}
+    .block-container{padding-top:0.75rem;padding-bottom:.7rem;max-width:1540px;}
     header[data-testid="stHeader"]{background:transparent;height:0rem;}
     div[data-testid="stToolbar"]{display:none;}
-    .kra-topbar{min-height:112px;display:flex;align-items:center;justify-content:space-between;background:#fff;margin:0 -14px 16px -14px;padding:14px 24px 14px 24px;border-bottom:3px solid var(--red);box-shadow:0 8px 20px rgba(0,0,0,.07);position:relative;overflow:hidden;box-sizing:border-box;}
-    .kra-topbar:after{content:"";position:absolute;right:-18px;top:0;width:300px;height:112px;background:linear-gradient(145deg,transparent 0 42%,var(--red) 43% 68%,#fff 69% 74%,var(--black) 75% 80%,transparent 81%);}
-    .kra-brand{width:250px;z-index:2;display:flex;align-items:center;}
-    .kra-logo{max-width:230px;max-height:78px;object-fit:contain;}
+    .kra-topbar{min-height:126px;display:flex;align-items:center;justify-content:space-between;background:#fff;margin:0 -14px 16px -14px;padding:14px 24px 14px 24px;border-bottom:3px solid var(--red);box-shadow:0 8px 20px rgba(0,0,0,.07);position:relative;overflow:hidden;box-sizing:border-box;}
+    .kra-topbar:after{content:"";position:absolute;right:-18px;top:0;width:300px;height:126px;background:linear-gradient(145deg,transparent 0 42%,var(--red) 43% 68%,#fff 69% 74%,var(--black) 75% 80%,transparent 81%);}
+    .kra-brand{width:360px;z-index:2;display:flex;align-items:center;justify-content:flex-start;overflow:visible;}
+    .kra-logo{width:320px;max-width:100%;max-height:92px;object-fit:contain;object-position:left center;display:block;}
     .kra-word-logo{border-left:8px solid var(--red);padding-left:12px;text-transform:uppercase;line-height:1.0;}
     .kra-word-logo b{display:block;font-size:36px;color:var(--black);letter-spacing:1px;}.kra-word-logo span{display:block;font-size:13px;color:var(--red);font-weight:800;}
     .kra-title{z-index:2;text-align:center;flex:1;}
     .main-title{text-transform:uppercase;font-size:32px;font-weight:950;color:var(--black);letter-spacing:.5px;white-space:nowrap;line-height:1.05;}
     .title-line{display:flex;align-items:center;gap:14px;justify-content:center;margin-top:10px;}.title-line span{height:3px;width:170px;background:var(--red);display:inline-block;position:relative;}.title-line span:after{content:"";width:9px;height:9px;background:var(--red);border-radius:50%;position:absolute;right:-2px;top:-3px;}.title-line b{text-transform:uppercase;color:var(--red);font-size:22px;font-weight:950;letter-spacing:.5px;line-height:1.05;}
-    .kra-accent-space{z-index:2;width:220px;min-height:1px;}
+    .kra-accent-space{z-index:2;width:260px;min-height:1px;}
     section[data-testid="stSidebar"]{background:linear-gradient(180deg,#030303 0%,#090909 72%,#260004 100%);border-right:2px solid #111;}
     section[data-testid="stSidebar"] *{color:#fff!important;}
     section[data-testid="stSidebar"] .stRadio label{padding:.55rem .25rem;border-bottom:1px solid rgba(255,255,255,.10);}
